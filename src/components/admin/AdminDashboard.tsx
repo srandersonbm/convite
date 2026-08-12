@@ -44,6 +44,7 @@ export function AdminDashboard() {
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [busyToken, setBusyToken] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [groupedView, setGroupedView] = useState(false);
 
   const refresh = useCallback(async () => {
     setRefreshing(true);
@@ -131,6 +132,21 @@ export function AdminDashboard() {
     }
   }
 
+  async function onDelete(token: string) {
+    if (!window.confirm("Excluir este convite revogado da lista? Essa ação não pode ser desfeita.")) {
+      return;
+    }
+    setBusyToken(token);
+    try {
+      const res = await fetch(`/api/admin/links/${token}`, { method: "DELETE" });
+      if (res.ok) {
+        setGuests((prev) => prev?.filter((g) => g.token !== token) ?? prev);
+      }
+    } finally {
+      setBusyToken(null);
+    }
+  }
+
   async function onCopy(token: string) {
     try {
       await navigator.clipboard.writeText(inviteUrl(token));
@@ -152,6 +168,8 @@ export function AdminDashboard() {
     router.push("/");
     router.refresh();
   }
+
+  const rowProps = { copiedToken, busyToken, onCopy, onWhatsapp, onRevoke, onDelete };
 
   return (
     <main className="min-h-svh bg-cream px-4 pb-24 pt-8 sm:px-8 sm:pt-12">
@@ -181,7 +199,13 @@ export function AdminDashboard() {
         </header>
 
         <div className="mb-8 grid grid-cols-3 gap-2.5 sm:gap-3">
-          <StatCard label="Confirmados" value={counts.confirmed} accent="text-forest" />
+          <StatCard
+            label="Confirmados"
+            value={counts.confirmed}
+            accent="text-forest"
+            active={groupedView}
+            onClick={() => setGroupedView((v) => !v)}
+          />
           <StatCard label="Aguardando" value={counts.pending} accent="text-gold-dark" />
           <StatCard label="Total de links" value={counts.total} accent="text-ink" />
         </div>
@@ -210,63 +234,25 @@ export function AdminDashboard() {
           <p className="text-sm text-ink/40">Carregando...</p>
         ) : guests.length === 0 ? (
           <p className="text-sm text-ink/40">Nenhum convite gerado ainda.</p>
+        ) : groupedView ? (
+          <div className="flex flex-col gap-8">
+            <GuestGroup
+              title="Confirmados"
+              guests={guests.filter((g) => g.status === "confirmed")}
+              empty="Ninguém confirmou ainda."
+              {...rowProps}
+            />
+            <GuestGroup
+              title="Ainda faltam confirmar"
+              guests={guests.filter((g) => g.status === "pending")}
+              empty="Nenhum convite aguardando confirmação."
+              {...rowProps}
+            />
+          </div>
         ) : (
           <ul className="flex flex-col gap-3">
             {guests.map((g) => (
-              <li
-                key={g.token}
-                className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-white/50 p-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate font-medium text-ink">{g.guest_label}</p>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${STATUS_CLASS[g.status]}`}
-                    >
-                      {STATUS_LABEL[g.status]}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-ink/45">
-                    Criado em {dateFmt.format(new Date(g.created_at))}
-                    {g.status === "confirmed" && g.confirmed_at && (
-                      <>
-                        {" · "}confirmado por{" "}
-                        <span className="text-forest">{g.confirmed_name}</span> em{" "}
-                        {dateFmt.format(new Date(g.confirmed_at))}
-                      </>
-                    )}
-                  </p>
-                </div>
-
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onCopy(g.token)}
-                    className="rounded-full border border-ink/15 px-3.5 py-2 text-xs text-ink/70 transition hover:border-ink/30"
-                  >
-                    {copiedToken === g.token ? "Copiado!" : "Copiar link"}
-                  </button>
-                  {g.status === "pending" && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => onWhatsapp(g.token)}
-                        className="rounded-full bg-forest/10 px-3.5 py-2 text-xs font-medium text-forest transition hover:bg-forest/15"
-                      >
-                        WhatsApp
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busyToken === g.token}
-                        onClick={() => onRevoke(g.token)}
-                        className="rounded-full px-3.5 py-2 text-xs text-terracotta transition hover:bg-terracotta/10 disabled:opacity-40"
-                      >
-                        Revogar
-                      </button>
-                    </>
-                  )}
-                </div>
-              </li>
+              <GuestRow key={g.token} guest={g} {...rowProps} />
             ))}
           </ul>
         )}
@@ -275,11 +261,151 @@ export function AdminDashboard() {
   );
 }
 
-function StatCard({ label, value, accent }: { label: string; value: number; accent: string }) {
+interface RowProps {
+  copiedToken: string | null;
+  busyToken: string | null;
+  onCopy: (token: string) => void;
+  onWhatsapp: (token: string) => void;
+  onRevoke: (token: string) => void;
+  onDelete: (token: string) => void;
+}
+
+function GuestGroup({
+  title,
+  guests,
+  empty,
+  ...rowProps
+}: { title: string; guests: Guest[]; empty: string } & RowProps) {
   return (
-    <div className="rounded-2xl border border-ink/10 bg-cream-2/50 px-3 py-4 text-center sm:px-4">
+    <section>
+      <h2 className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-ink/45">
+        {title} <span className="text-ink/30">({guests.length})</span>
+      </h2>
+      {guests.length === 0 ? (
+        <p className="text-sm text-ink/35">{empty}</p>
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {guests.map((g) => (
+            <GuestRow key={g.token} guest={g} {...rowProps} />
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function GuestRow({
+  guest: g,
+  copiedToken,
+  busyToken,
+  onCopy,
+  onWhatsapp,
+  onRevoke,
+  onDelete,
+}: { guest: Guest } & RowProps) {
+  return (
+    <li className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-white/50 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="truncate font-medium text-ink">{g.guest_label}</p>
+          <span
+            className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${STATUS_CLASS[g.status]}`}
+          >
+            {STATUS_LABEL[g.status]}
+          </span>
+        </div>
+        <p className="mt-1 text-xs text-ink/45">
+          Criado em {dateFmt.format(new Date(g.created_at))}
+          {g.status === "confirmed" && g.confirmed_at && (
+            <>
+              {" · "}confirmado por <span className="text-forest">{g.confirmed_name}</span> em{" "}
+              {dateFmt.format(new Date(g.confirmed_at))}
+            </>
+          )}
+        </p>
+      </div>
+
+      <div className="flex shrink-0 flex-wrap gap-2">
+        {g.status !== "revoked" && (
+          <button
+            type="button"
+            onClick={() => onCopy(g.token)}
+            className="rounded-full border border-ink/15 px-3.5 py-2 text-xs text-ink/70 transition hover:border-ink/30"
+          >
+            {copiedToken === g.token ? "Copiado!" : "Copiar link"}
+          </button>
+        )}
+        {g.status === "pending" && (
+          <>
+            <button
+              type="button"
+              onClick={() => onWhatsapp(g.token)}
+              className="rounded-full bg-forest/10 px-3.5 py-2 text-xs font-medium text-forest transition hover:bg-forest/15"
+            >
+              WhatsApp
+            </button>
+            <button
+              type="button"
+              disabled={busyToken === g.token}
+              onClick={() => onRevoke(g.token)}
+              className="rounded-full px-3.5 py-2 text-xs text-terracotta transition hover:bg-terracotta/10 disabled:opacity-40"
+            >
+              Revogar
+            </button>
+          </>
+        )}
+        {g.status === "revoked" && (
+          <button
+            type="button"
+            disabled={busyToken === g.token}
+            onClick={() => onDelete(g.token)}
+            className="rounded-full px-3.5 py-2 text-xs text-terracotta transition hover:bg-terracotta/10 disabled:opacity-40"
+          >
+            Excluir
+          </button>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+  active,
+  onClick,
+}: {
+  label: string;
+  value: number;
+  accent: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
       <p className={`font-display text-2xl ${accent}`}>{value}</p>
       <p className="mt-0.5 text-[10px] uppercase tracking-[0.15em] text-ink/45">{label}</p>
-    </div>
+    </>
+  );
+
+  if (!onClick) {
+    return (
+      <div className="rounded-2xl border border-ink/10 bg-cream-2/50 px-3 py-4 text-center sm:px-4">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-2xl border px-3 py-4 text-center transition sm:px-4 ${
+        active ? "border-forest bg-forest/10" : "border-ink/10 bg-cream-2/50 hover:border-ink/25"
+      }`}
+    >
+      {content}
+    </button>
   );
 }
