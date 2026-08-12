@@ -4,12 +4,12 @@ export const EVENT = {
   guestName: "Alessandra Barbosa",
   age: 50,
   title: "50 anos de Alessandra Barbosa",
-  dateISO: "2026-09-09T18:00:00-03:00", // TODO: confirmar horário exato
+  dateISO: "2026-09-09T09:00:00-03:00",
   dateLabel: "9 de setembro de 2026",
   weekdayLabel: "quarta-feira",
-  timeLabel: "18h", // TODO: confirmar horário
+  timeLabel: "9h",
   venueName: "Damata Restaurante & Cachaçaria",
-  venueCity: "Imperatriz, MA", // TODO: confirmar cidade
+  venueCity: "Imperatriz, MA",
   mapsUrl: "https://maps.app.goo.gl/uDgsBQ53sGyh3sNh7",
   mapsEmbedQuery: "Damata Restaurante & Cachaçaria",
   dressCode: "", // TODO: opcional, ex: "Esporte fino"
