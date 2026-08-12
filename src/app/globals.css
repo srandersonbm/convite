@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  --color-cream: #f7f2e9;
+  --color-cream-2: #efe7d8;
+  --color-ink: #23241f;
+  --color-forest: #2f3b30;
+  --color-forest-dark: #1c261d;
+  --color-terracotta: #b5713f;
+  --color-terracotta-light: #d69a68;
+  --color-gold: #ad8a4e;
+  --color-gold-dark: #7c6029;
+  --color-line: rgba(35, 36, 31, 0.12);
+}
+
+@theme inline {
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+
+  --color-cream: var(--color-cream);
+  --color-cream-2: var(--color-cream-2);
+  --color-ink: var(--color-ink);
+  --color-forest: var(--color-forest);
+  --color-forest-dark: var(--color-forest-dark);
+  --color-terracotta: var(--color-terracotta);
+  --color-terracotta-light: var(--color-terracotta-light);
+  --color-gold: var(--color-gold);
+  --color-gold-dark: var(--color-gold-dark);
+
+  --animate-fade-up: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-drift: drift 14s ease-in-out infinite;
+  --animate-bounce-soft: bounce-soft 2.2s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(0, -14px, 0) scale(1.02); }
+  }
+  @keyframes bounce-soft {
+    0%, 100% { transform: translateY(0); opacity: 0.55; }
+    50% { transform: translateY(8px); opacity: 1; }
+  }
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+}
+
+::selection {
+  background: var(--color-terracotta);
+  color: var(--color-cream);
+}
+
+/* Barra de rolagem discreta (webkit) — puramente cosmético */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-cream-2);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
