@@ -72,6 +72,15 @@ export function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.58, ease: [0.16, 1, 0.3, 1] }}
+          className="font-display mt-3 text-base italic text-cream/80 sm:text-lg"
+        >
+          {EVENT.kicker}
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
           className="mt-5 text-sm uppercase tracking-[0.2em] text-cream/85 sm:text-base"
         >

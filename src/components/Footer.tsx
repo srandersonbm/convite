@@ -6,7 +6,12 @@ export function Footer() {
   return (
     <footer className="bg-forest-dark px-6 pb-10 pt-20 sm:pt-24">
       <div className="mx-auto flex max-w-xl flex-col items-center gap-6 text-center">
-        <Reveal>
+        {EVENT.closingMessage && (
+          <Reveal>
+            <p className="text-sm leading-relaxed text-cream/70">{EVENT.closingMessage}</p>
+          </Reveal>
+        )}
+        <Reveal delay={0.04}>
           <p className="font-display text-2xl italic text-cream/90">Com carinho,</p>
         </Reveal>
         <Reveal delay={0.06}>

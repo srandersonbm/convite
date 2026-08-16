@@ -19,6 +19,15 @@ export function DateStrip() {
         <Reveal delay={0.16}>
           <Countdown />
         </Reveal>
+        {EVENT.dressCode && (
+          <Reveal delay={0.24} className="mt-2 border-t border-cream/10 pt-6">
+            <p className="text-[11px] uppercase tracking-[0.3em] text-terracotta-light">Traje sugerido</p>
+            <p className="font-display mt-2 text-lg text-cream">{EVENT.dressCode}</p>
+            {EVENT.dressCodeNote && (
+              <p className="mx-auto mt-2 max-w-sm text-xs italic text-cream/55">{EVENT.dressCodeNote}</p>
+            )}
+          </Reveal>
+        )}
       </div>
     </section>
   );
