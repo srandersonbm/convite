@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: EVENT.title,
     description: `Você está convidado(a)! ${EVENT.dateLabel} · ${EVENT.venueName}`,
-    images: ["/photos/alessandra-2.jpg"],
+    images: ["/photos/alessandra-4.jpg"],
     locale: "pt_BR",
     type: "website",
   },

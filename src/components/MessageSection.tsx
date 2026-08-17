@@ -12,7 +12,7 @@ export function MessageSection() {
             alt={`${EVENT.guestName} sorrindo`}
             fill
             sizes="(min-width: 640px) 40vw, 80vw"
-            className="object-cover"
+            className="object-cover object-top"
           />
           <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-ink/10" />
         </Reveal>
