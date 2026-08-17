@@ -9,7 +9,7 @@ export const EVENT = {
   dateLabel: "5 de setembro de 2026",
   weekdayLabel: "sábado",
   timeLabel: "17h30",
-  venueName: "Damata Restaurante & Cachaçaria",
+  venueName: "Damata Restaurante",
   venueCity: "Imperatriz, MA",
   mapsUrl: "https://maps.app.goo.gl/uDgsBQ53sGyh3sNh7",
   mapsEmbedQuery: "Damata Restaurante & Cachaçaria",
@@ -22,5 +22,5 @@ export const EVENT = {
   closingMessage:
     "Conto com a sua presença radiante para tornarmos este dia inesquecível e celebrar juntos a beleza da vida e da amizade. Espero por você!",
   whatsappMessageTemplate: (url: string) =>
-    `Oi! 🎉 Você está convidado(a) para o Culto de Gratidão e Celebração dos 50 anos da Alessandra Barbosa!\n\n📅 5 de setembro, 17h30\n📍 Damata Restaurante & Cachaçaria\n\nConfirme sua presença pelo link: ${url}`,
+    `Oi! 🎉 Você está convidado(a) para o Culto de Gratidão e Celebração dos 50 anos da Alessandra Barbosa!\n\n📅 5 de setembro, 17h30\n📍 ${EVENT.venueName}\n\nConfirme sua presença pelo link: ${url}`,
 };

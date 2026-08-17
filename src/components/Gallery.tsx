@@ -6,11 +6,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { Reveal } from "@/components/Reveal";
 
 const PHOTOS = [
-  { src: "/photos/damata-3.jpg", alt: "Mesa posta no Damata Restaurante & Cachaçaria" },
+  { src: "/photos/damata-3.jpg", alt: "Mesa posta no Damata Restaurante" },
   { src: "/photos/damata-1.jpg", alt: "Área externa do Damata, em meio à natureza" },
   { src: "/photos/damata-4.jpg", alt: "Prato servido no Damata" },
   { src: "/photos/alessandra-5.jpg", alt: "Alessandra Barbosa" },
-  { src: "/photos/damata-2.jpg", alt: "Salão do Damata Restaurante & Cachaçaria" },
+  { src: "/photos/damata-2.jpg", alt: "Salão do Damata Restaurante" },
   { src: "/photos/damata-5.jpg", alt: "Detalhe decorativo do Damata" },
 ];
 
